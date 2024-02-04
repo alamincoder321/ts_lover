@@ -2,35 +2,37 @@
 
 namespace App\Http\Controllers\FrontEnd;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\FrontEnd\MiscellaneousController;
-use App\Http\Helpers\BasicMailer;
-use App\Http\Helpers\UploadFile;
-use App\Http\Requests\PayRequest;
-use App\Http\Requests\UserProfileRequest;
+use App\Models\User;
 use App\Models\Account;
+use App\Models\Package;
+use App\Models\Withdraw;
+use Illuminate\Support\Str;
+use App\Models\Shop\Product;
+use Illuminate\Http\Request;
+use App\Rules\MatchEmailRule;
+use App\Models\PaymentRequest;
+use App\Http\Helpers\UploadFile;
+use App\Http\Helpers\BasicMailer;
+use App\Http\Requests\PayRequest;
+use App\Models\Shop\ProductOrder;
+use Illuminate\Support\Facades\DB;
 use App\Models\BasicSettings\Basic;
+use App\Rules\MatchOldPasswordRule;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Response;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Requests\UserProfileRequest;
+use Illuminate\Support\Facades\Validator;
 use App\Models\BasicSettings\MailTemplate;
 use App\Models\Instrument\EquipmentBooking;
-use App\Models\Package;
-use App\Models\PaymentRequest;
-use App\Models\Shop\Product;
-use App\Models\Shop\ProductOrder;
-use App\Models\User;
-use App\Models\Withdraw;
-use App\Rules\MatchEmailRule;
-use App\Rules\MatchOldPasswordRule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\FrontEnd\MiscellaneousController;
+use App\Mail\ForgetMail;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class UserController extends Controller
@@ -163,37 +165,33 @@ class UserController extends Controller
 
   public function resetPasswordSubmit(Request $request)
   {
-    if ($request->session()->has('userEmail')) {
-      // get the user email from session
-      $emailAddress = $request->session()->get('userEmail');
 
-      $rules = [
-        'new_password' => 'required|confirmed',
-        'new_password_confirmation' => 'required'
-      ];
+    // get the user email from session
+    $userId = $request->userId;
 
-      $messages = [
-        'new_password.confirmed' => 'Password confirmation failed.',
-        'new_password_confirmation.required' => 'The confirm new password field is required.'
-      ];
+    $rules = [
+      'userId' => 'required',
+    ];
 
-      $validator = Validator::make($request->all(), $rules, $messages);
+    $validator = Validator::make($request->all(), $rules);
 
-      if ($validator->fails()) {
-        return redirect()->back()->withErrors($validator->errors());
-      }
-
-      $user = User::query()->where('email', '=', $emailAddress)->first();
-
-      $user->update([
-        'password' => Hash::make($request->new_password)
-      ]);
-
-      Session::flash('success', 'Password updated successfully.');
-    } else {
-      Session::flash('error', 'Something went wrong!');
+    if ($validator->fails()) {
+      return redirect()->back()->withErrors($validator->errors());
     }
 
+    $user = User::where('unique_id', $userId)->first();
+    
+    if($user){
+      $uniqueId = rand(100000, 999999);
+      $user->update([
+        'password' => Hash::make($uniqueId)
+      ]);
+
+      Mail::to($user->email)->send(new ForgetMail($uniqueId));
+      Session::flash('success', 'Password updated successfully.');
+    }else{
+      Session::flash('error', 'User Id not found');
+    }
     return redirect()->route('user.login');
   }
 
@@ -232,7 +230,7 @@ class UserController extends Controller
     $user->email = $request->email;
     $user->password = Hash::make($request->password);
     $user->referral_id = $request->referral_id;
-    $user->unique_id = rand(111111,99999);
+    $user->unique_id = rand(111111, 999999);
     $randStr = Str::random(20);
     $token = md5($randStr . $request->first_name . $request->last_name . $request->email);
     $user->verification_token = $token;
@@ -494,23 +492,21 @@ class UserController extends Controller
     return redirect()->route('user.login');
   }
 
-  public function CheckUsernameExists(Request $request){
+  public function CheckUsernameExists(Request $request)
+  {
     $username = $request->username;
-    if($username){
-      $exits = User::where('username',$username)->first();
-      if(!is_null($exits)){
+    if ($username) {
+      $exits = User::where('username', $username)->first();
+      if (!is_null($exits)) {
         return response()->json([
           'message' => 'error'
         ]);
-      }else{
+      } else {
         return response()->json([
           'message' => 'success'
         ]);
       }
-
     }
     return "error";
   }
-
-
 }

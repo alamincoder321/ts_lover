@@ -63,7 +63,6 @@
       </div>
     </div>
   </form>
-
   <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog" style="width:330px">
       <!-- Modal content-->
@@ -81,6 +80,27 @@
       </div>
     </div>
   </div>
+  <form action="{{ route('user.reset_password_submit') }}" method="post">
+    @csrf
+    <div id="forgetpasswordsection" style="display:none;">
+      <h1>Reset Password!</h1>
+      <p class="text-white">Give us your account to reset the password</p>
+      <div id="forgotpasswordmain">
+        <div class="user-box">
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+            <div class="form-floating">
+              <input type="text" class="form-control" name="userId" placeholder="User Id" required="required" id="txtforgotpasswordbanker">
+              <label for="txtforgotpasswordbanker">User Id</label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn-login">
+          Verify
+        </button>
+        <a href="" type="button" class="btn-login" id="lgsec">Log in</a>
+      </div>
+  </form>
 </div>
 <!--- sequirty model--->
 @endsection
@@ -141,5 +161,10 @@
       }, 500);
     }
   });
+
+  $('#fpsec').click(function() {
+    $('#forgetpasswordsection').show()
+    $('#loginsection').hide()
+  })
 </script>
 @endsection

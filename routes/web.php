@@ -13,6 +13,7 @@ Route::get('/', 'FrontEnd\HomeController@index')->name('index');
 
 Route::prefix('/user')->middleware(['guest:web', 'change.lang'])->group(function () {
   Route::get('/login', 'FrontEnd\UserController@login')->name('user.login');
+  Route::get('/login', 'FrontEnd\UserController@login')->name('user.login');
   Route::post('/login-submit', 'FrontEnd\UserController@loginSubmit')->name('user.login_submit')->withoutMiddleware('change.lang');
   Route::get('/forget-password', 'FrontEnd\UserController@forgetPassword')->name('user.forget_password');
   Route::post('/send-forget-password-mail', 'FrontEnd\UserController@forgetPasswordMail')->name('user.send_forget_password_mail')->withoutMiddleware('change.lang');
