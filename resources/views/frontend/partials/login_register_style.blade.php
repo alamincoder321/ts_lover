@@ -4,7 +4,7 @@
 <link href="{{ asset('/assets/login_registration/css/bootstrap.min_1.css') }}" rel="stylesheet">
 <link href="{{ asset('/assets/login_registration/css/iao-alert.css') }}" rel="stylesheet">
 <link href="{{ asset('/assets/login_registration/css/slidercaptcha.min.css') }}" rel="stylesheet">
-<link href="{{ asset('/assets/login_registration/css/nav-style.css') }}" rel="stylesheet">
+<!-- <link href="{{ asset('/assets/login_registration/css/nav-style.css') }}" rel="stylesheet"> -->
 <link href="{{ asset('/assets/login_registration/slidercaptcha')}}/slidercaptcha.min.css" rel="stylesheet" />
 {{-- toastr css --}}
 <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">

@@ -10,8 +10,7 @@ $user = Auth::guard('web')->user();
                     @if ($user->image != null)
                     <div class="avatar avatar-online">
                         <span class="avatar-title rounded-circle border border-white bg-info">
-                            <img src="{{ asset('assets/account/img/'.$user->image) }}" alt="User Image"
-                                class="avatar-img rounded-circle">
+                            <img src="{{ asset('assets/account/img/'.$user->image) }}" alt="User Image" class="avatar-img rounded-circle">
                         </span>
                     </div>
 
@@ -32,8 +31,8 @@ $user = Auth::guard('web')->user();
                 </div>
             </div>
             <ul class="nav nav-primary">
-                <li class="nav-item ">
-                    <a href="">
+                <li class="nav-item {{Route::is('user.dashboard') ? 'active' : ''}}">
+                    <a href="{{route('user.dashboard')}}">
                         <i class="la flaticon-paint-palette"></i>
                         <p>{{ __('Dashboard') }}</p>
                     </a>
@@ -60,7 +59,7 @@ $user = Auth::guard('web')->user();
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item ">
+                <li class="nav-item">
                     <a href="">
                         <i class="fas fa-box-open"></i>
                         <p>{{ __('All Invest Packages') }}</p>
@@ -78,14 +77,14 @@ $user = Auth::guard('web')->user();
                         <p>{{ __('Transactions') }}</p>
                     </a>
                 </li>
-                <li class="nav-item @if(request()->routeIs('user.change_password')) active @endif ">
+                <li class="nav-item {{Route::is('user.change_password') ? 'active':''}} ">
                     <a href="{{ route('user.change_password') }}">
                         <i class="fas fa-edit"></i>
                         <p>{{ __('Change Password') }}</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href=" {{ route('user.logout') }}">
+                    <a href="{{ route('user.logout') }}">
                         <i class="fal fa-sign-out"></i>
                         <p>{{ __('Logout') }}</p>
                     </a>

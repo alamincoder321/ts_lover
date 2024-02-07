@@ -47,7 +47,7 @@ class ForgetMail extends Mailable
         return new Content(
             view: 'mail.forgot',
             with: [
-                'userData' => $this->userData,
+                'userPass' => $this->userData,
             ],
         );
     }
